@@ -4,7 +4,7 @@
 
 **AirSense Copenhagen** is a real-time air quality monitoring project focused on identifying pollution trends across Copenhagen’s urban landscape. It uses API-driven data collection and scientifically standardized AQI calculations to support smarter, cleaner city planning.
 
-This project helps advance Copenhagen’s carbon-neutral goals by turning air quality data into actionable insights, especially in relation to traffic patterns. The AQI calculations are based on official EPA methodology, ensuring consistent and comparable pollution scoring across locations.
+This university project from our Machine Learning course helps advance Copenhagen’s carbon-neutral goals by turning air quality data into actionable insights, especially in relation to traffic patterns. The AQI calculations are based on official EPA methodology, ensuring consistent and comparable pollution scoring across locations.
 
 ## Key Features
 
