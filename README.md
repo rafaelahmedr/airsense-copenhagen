@@ -1,148 +1,143 @@
 # AirSense Copenhagen
 
-## Project Overview
+## Overview
 
-AirSense Copenhagen is a data science project that leverages real-time air pollution data to identify pollution hotspots in Copenhagen's urban areas. The system integrates air quality measurements across different locations to create insights that can inform targeted traffic management solutions.
+**AirSense Copenhagen** is a real-time air quality monitoring project focused on identifying pollution trends across Copenhagen’s urban landscape. It uses API-driven data collection and scientifically standardized AQI calculations to support smarter, cleaner city planning.
 
-This project supports Copenhagen's carbon neutrality goals by providing data-driven tools for analyzing the relationship between traffic patterns and air pollution levels. The implementation calculates a scientifically valid Air Quality Index (AQI) according to EPA standards, allowing for consistent assessment of air quality across different urban environments.
+This project helps advance Copenhagen’s carbon-neutral goals by turning air quality data into actionable insights, especially in relation to traffic patterns. The AQI calculations are based on official EPA methodology, ensuring consistent and comparable pollution scoring across locations.
 
-## Features
+## Key Features
 
-- Retrieves air quality data from Open-Meteo's Air Quality API
-- Collects data for multiple key locations in Copenhagen
-- Implements the EPA's Air Quality Index calculation methodology
-- Uses proper averaging periods for different pollutants:
+- Integrates with the Open-Meteo Air Quality API  
+- Monitors pollution data from multiple urban points in Copenhagen  
+- Implements EPA-standard AQI computation logic  
+- Applies correct pollutant-specific averaging rules:
   - 24-hour averages for PM2.5 and PM10
   - 8-hour averages for O3 and CO
-  - 1-hour values for NO2 and SO2
-- Identifies dominant pollutants at each location and timestamp
-- Categorizes air quality according to standard EPA categories
+  - 1-hour values for NO2 and SO2  
+- Highlights the dominant pollutant and air quality rating per location  
+- Categorizes pollution levels based on EPA AQI bands  
 
 ## Project Structure
 
 ```
 airsense_copenhagen/
-├── config.py             # Configuration settings and constants
-├── aqi_breakpoints.py    # EPA AQI breakpoints for different pollutants
-├── aqi_calculator.py     # Functions for calculating AQI values
-├── data_fetcher.py       # API interaction and data retrieval
-├── data_processor.py     # Data processing and AQI calculation pipeline
-├── main.py               # Main script to execute the workflow
-└── README.md             # Project documentation
+├── config.py             # Centralized configuration and constants
+├── aqi_breakpoints.py    # AQI threshold data
+├── aqi_calculator.py     # Core AQI logic
+├── data_fetcher.py       # API querying and data collection
+├── data_processor.py     # Data cleaning and aggregation
+├── main.py               # Runs the full pipeline
+└── README.md             # Documentation
 ```
 
-### File Descriptions
+### File Roles
 
-- **config.py**: Contains location coordinates, API settings, and conversion factors
-- **aqi_breakpoints.py**: Defines EPA breakpoints for different pollutants
-- **aqi_calculator.py**: Functions to calculate AQI values from pollutant concentrations
-- **data_fetcher.py**: Handles API requests to retrieve air quality data
-- **data_processor.py**: Processes raw data to calculate rolling averages and AQI
-- **main.py**: Orchestrates the entire workflow
+- `config.py`: Coordinates, API keys, and unit conversion constants  
+- `aqi_breakpoints.py`: EPA AQI breakpoint definitions  
+- `aqi_calculator.py`: Calculates AQI from pollutant concentrations  
+- `data_fetcher.py`: Downloads air quality data using Open-Meteo  
+- `data_processor.py`: Applies averages and prepares AQI metrics  
+- `main.py`: Ties everything together and produces final output  
 
-## Installation
+## Getting Started
 
-1. Clone the repository:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/airsense_copenhagen.git
+   cd airsense_copenhagen
    ```
-   git clone [GITHUB URL]
-   cd [PROJECT NAME]
-   ```
 
-2. Create a virtual environment (optional but recommended):
-   ```
+2. **(Optional) Create a virtual environment:**
+   ```bash
    python -m venv env
-   source env/bin/activate  # On Windows, use: env\Scripts\activate
+   source env/bin/activate  # Windows: env\Scripts\activate
    ```
 
-3. Install required packages:
-   ```
+3. **Install required packages:**
+   ```bash
    pip install requests pandas numpy
    ```
 
-## Usage
+## How to Run
 
-Run the main script to collect and process air quality data:
+Use the command below to fetch, process, and evaluate air quality data:
 
-```
+```bash
 python main.py
 ```
 
-This will:
-1. Download air quality data for the past year from three distinct locations in Copenhagen
-2. Calculate rolling averages based on EPA standards
-3. Compute AQI values for each timestamp
-4. Display the most recent results for each location
+This script will:
+- Retrieve historical air quality data from three Copenhagen locations  
+- Apply EPA-standard time-weighted averages  
+- Compute AQI values per location and time interval  
+- Output the most recent readings per area  
 
-### Working with the Results
+## Working with Results
 
-The processed data is stored in DataFrames with the following key columns:
+Each location produces a DataFrame with these key columns:
 
-- `time`: Timestamp for the measurements
-- `AQI`: Calculated Air Quality Index value
-- `AQI_Category`: Text category (Good, Moderate, etc.)
-- `Dominant_Pollutant`: The pollutant responsible for the AQI value
+- `time`: Measurement timestamp  
+- `AQI`: Calculated index score  
+- `AQI_Category`: Qualitative pollution level  
+- `Dominant_Pollutant`: Pollutant contributing most to the AQI  
 
-To work with specific locations or time periods:
+Example usage in Python:
 
 ```python
 import pandas as pd
 from main import main
 
-# Get processed data
-processed_dfs = main()
+# Run pipeline
+dfs = main()
 
-# Access a specific location
-hcab_data = processed_dfs["H.C. Andersens Boulevard"]
+# Access one location
+boulevard_df = dfs["H.C. Andersens Boulevard"]
 
-# Filter for a specific time period
-last_month = hcab_data[hcab_data['time'] > pd.Timestamp.now() - pd.Timedelta(days=30)]
+# Filter last 30 days
+recent_data = boulevard_df[boulevard_df['time'] > pd.Timestamp.now() - pd.Timedelta(days=30)]
 
-# Calculate average AQI for this period
-avg_aqi = last_month['AQI'].mean()
-print(f"Average AQI for last month: {avg_aqi:.1f}")
+# Average AQI
+print("Avg AQI (last 30 days):", recent_data['AQI'].mean())
 ```
 
-## Technical Approach
+## Data Sources
 
-### Data Sources
+We utilize the Open-Meteo Air Quality API for high-resolution hourly data on:
 
-The project uses the Open-Meteo Air Quality API, which provides historical and current air quality data with 1-2km spatial resolution. The API offers hourly measurements for multiple pollutants:
+- PM2.5 / PM10  
+- NO2  
+- CO  
+- SO2  
+- O3  
 
-- Particulate Matter (PM2.5 and PM10)
-- Nitrogen Dioxide (NO2)
-- Carbon Monoxide (CO)
-- Sulfur Dioxide (SO2)
-- Ozone (O3)
+### Locations Tracked
 
-### Locations
+- **H.C. Andersens Boulevard** – Dense traffic/commercial area  
+- **Nørrebro** – Residential and mixed-use district  
+- **Amager Strandpark** – Coastal green space with low emissions  
 
-We analyze three strategic locations that represent different urban environments:
+## AQI Methodology
 
-1. **H.C. Andersens Boulevard**: High-traffic urban center with commercial activity
-2. **Nørrebro Residential Area**: Medium-density mixed-use neighborhood
-3. **Amager Strandpark**: Coastal recreational area with minimal traffic
+Following the EPA standard, we:
 
-### AQI Calculation Methodology
+1. Compute pollutant-specific rolling averages  
+2. Convert concentrations into AQI using breakpoint tables  
+3. Use the highest AQI value per location as the overall AQI  
+4. Determine the dominant pollutant  
+5. Categorize results into Good, Moderate, Unhealthy, etc.
 
-The Air Quality Index calculation follows the EPA standard methodology:
+## Roadmap
 
-1. Calculate appropriate rolling averages for each pollutant
-2. Convert concentration values to a standardized index scale (0-500)
-3. Determine overall AQI as the maximum of individual pollutant indices
-4. Identify the dominant pollutant responsible for the AQI value
-5. Categorize AQI values according to health impact levels
+Future enhancements may include:
 
-## Future Development
-
-Potential enhancements for this project include:
-
-- Integration with traffic density data
-- Predictive modeling of air quality based on traffic patterns
-- Visualization dashboard for real-time monitoring
-- Expansion to additional locations in Copenhagen
-- Temporal analysis to identify daily/weekly/seasonal patterns
+- Integration with traffic congestion data  
+- Machine learning to predict AQI trends  
+- Web-based dashboard for live updates  
+- Support for additional monitoring sites  
+- Seasonal and temporal trend visualizations  
 
 ## Acknowledgments
 
-- Open-Meteo for providing the Air Quality API
-- EPA for the AQI calculation methodology and breakpoints
+- [Open-Meteo](https://open-meteo.com/) for providing API access  
+- U.S. Environmental Protection Agency for AQI framework  
